@@ -58,7 +58,6 @@ function loadMore(e) {
 async function fetchPhotos(url) {
     try {
         const response = await axios.get(url);
-        console.log(response.data);
         return response.data;
     } catch (error) {
         Notify.failure('Sorry, some server error. Please try again.')
@@ -67,7 +66,6 @@ async function fetchPhotos(url) {
 
 function noPhotos(response) {
     totalPics = response.totalHits;
-    console.log(totalPics);
     if (totalPics === 0) {
         throw new Error(Notify.failure('Sorry, there are no images matching your search query. Please try again.')
         )
@@ -79,7 +77,6 @@ function noPhotos(response) {
 };
 
 function drawPhotos(list) {
-    console.log(list);
     const markup = list.hits
         .map(({ webformatURL, largeImageURL, tags, likes, views, comments, downloads}) =>
             `<a href="${largeImageURL}">
