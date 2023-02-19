@@ -38,6 +38,7 @@ function submitForm(e) {
     parameters.q = e.currentTarget.elements.searchQuery.value.trim();
     if (parameters.q === '') {
         Notify.warning('Type some text to find some pics');
+        loadMoreEl.classList.add('hidden');
         return;
     }
     const searchParameters = new URLSearchParams(parameters);
