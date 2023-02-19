@@ -8,6 +8,7 @@ const galleryEl = document.querySelector('.gallery');
 const loadMoreEl = document.querySelector('.load-more');
 const richEndEl = document.querySelector('.rich-end');
 let thisGallery = new SimpleLightbox('.gallery a');
+let totalPics = 0;
 
 const URL = 'https://pixabay.com/api/';
 const parameters = {
