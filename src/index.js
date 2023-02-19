@@ -21,8 +21,6 @@ const parameters = {
     per_page: 40,
 };
 
-loadMoreEl.classList.add('hidden');
-
 formEl.addEventListener('submit', submitForm);
 loadMoreEl.addEventListener('click', loadMore);
 
