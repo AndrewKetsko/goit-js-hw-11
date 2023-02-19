@@ -6,27 +6,29 @@ import "simplelightbox/dist/simple-lightbox.min.css";
 const formEl = document.querySelector('#search-form');
 const galleryEl = document.querySelector('.gallery');
 const loadMoreEl = document.querySelector('.load-more');
+const richEndEl = document.querySelector('.rich-end');
 let thisGallery = new SimpleLightbox('.gallery a');
 
 const URL = 'https://pixabay.com/api/';
 let url = URL;
+let totalPics = 0;
 const parameters = {
     key: '33689552-2c019ac385bff48f263084117',
     q: '',
     image_type: 'photo',
     orientation: 'horizontal',
-    safesearch: true, 
+    safesearch: true,
     page: 1,
-    per_page: 4,
-}
-// const searchParameters = new URLSearchParams(parameters);
-// const url = `${URL}?${searchParameters}`;
+    per_page: 40,
+};
 
+loadMoreEl.classList.add('hidden');
 
 formEl.addEventListener('submit', submitForm);
 loadMoreEl.addEventListener('click', loadMore);
 
 function loadMore(e) {
+    loadMoreEl.classList.add('hidden');
     console.log(parameters.page);
     const searchParameters = new URLSearchParams(parameters);
     url = `${URL}?${searchParameters}`;
@@ -36,12 +38,10 @@ function loadMore(e) {
         .catch(() => { })
     return url;
 }
-
-// const searchParameters = new URLSearchParams(parameters);
-// url = `${URL}?${searchParameters}`;
     
 function submitForm(e) {
     e.preventDefault();
+    richEndEl.classList.add('hidden');
     galleryEl.innerHTML = '';
     parameters.page = 1;
     parameters.q = e.currentTarget.elements.searchQuery.value.trim();
@@ -51,7 +51,6 @@ function submitForm(e) {
     }
     const searchParameters = new URLSearchParams(parameters);
     url = `${URL}?${searchParameters}`;
-    // console.log(url);
     fetchPhotos(url)
         .then(noPhotos)
         .then(drawPhotos)
@@ -71,7 +70,8 @@ function fetchPhotos(url) {
 };
 
 function noPhotos(response) {
-    if (response.totalHits === 0) {
+    totalPics = response.totalHits;
+    if (totalPics === 0) {
         throw new Error(Notify.failure('Sorry, there are no images matching your search query. Please try again.')
         )
     };
@@ -82,8 +82,7 @@ function noPhotos(response) {
 };
 
 function drawPhotos(list) {
-    // galleryEl.innerHTML = '';
-    console.log(list.hits);
+    // console.log(list.hits);
     const markup = list.hits
         .map(({ webformatURL, largeImageURL, tags, likes, views, comments, downloads}) =>
             `<a href="${largeImageURL}">
@@ -105,12 +104,16 @@ function drawPhotos(list) {
             </a>`
         )
         .join('');
-    // galleryEl.innerHTML = markup;
     galleryEl.insertAdjacentHTML('beforeend', markup);
     thisGallery.refresh();
-    // let thisGallery = new SimpleLightbox('.gallery a');
     parameters.page += 1;
-    // listEl.removeEventListener('mouseover', cardFromList);
-    // listEl.addEventListener('mouseover', cardFromList);
+    richEnd = totalPics - parameters.page * parameters.per_page;
+    if (richEnd < 0) {
+        loadMoreEl.classList.add('hidden');
+        richEndEl.classList.remove('hidden');
+        return;
+    }
+    richEndEl.classList.add('hidden');
+    loadMoreEl.classList.remove('hidden');
     throw new Error();
 };

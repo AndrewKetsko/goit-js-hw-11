@@ -20,6 +20,8 @@ body {
 }
 
 .gallery > a {
+  text-decoration: none;
+  color: black;
   border: 2px solid black;
   border-radius: 20px;
   overflow: hidden;
@@ -29,6 +31,7 @@ body {
 .gallery img {
   -o-object-fit: contain;
      object-fit: contain;
+  height: 420px;
 }
 
 .gallery p {
@@ -38,6 +41,7 @@ body {
 }
 
 .info {
+  align-self: flex-end;
   display: flex;
   justify-content: space-around;
 }
@@ -46,4 +50,14 @@ body {
   display: block;
   margin-left: auto;
   margin-right: auto;
+}
+
+.hidden {
+  visibility: hidden;
+}
+
+.rich-end {
+  text-align: center;
+  font-size: 20px;
+  font-weight: 500;
 }/*# sourceMappingURL=index.css.map */
