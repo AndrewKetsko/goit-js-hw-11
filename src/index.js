@@ -27,7 +27,7 @@ loadMoreEl.addEventListener('click', loadMore);
 
 function submitForm(e) {
     e.preventDefault();
-    if (parameters.q === e.currentTarget.elements.searchQuery.value.trim()) {
+    if (parameters.q !== '' && parameters.q === e.currentTarget.elements.searchQuery.value.trim()) {
         Notify.info('Type some new search query please');
         return;
     }
