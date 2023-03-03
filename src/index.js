@@ -1,12 +1,12 @@
 import { Notify } from "notiflix";
-import axios from "axios";
 import SimpleLightbox from "simplelightbox";
 import "simplelightbox/dist/simple-lightbox.min.css";
+import { fetchPhotos } from "./js/fetchPhotos";
 
 const formEl = document.querySelector('#search-form');
 const galleryEl = document.querySelector('.gallery');
-const loadMoreEl = document.querySelector('.load-more');
 const richEndEl = document.querySelector('.rich-end');
+const observer = new IntersectionObserver(observeFunc);
 let thisGallery = new SimpleLightbox('.gallery a');
 let totalPics = 0;
 
@@ -22,7 +22,12 @@ const parameters = {
 };
 
 formEl.addEventListener('submit', submitForm);
-loadMoreEl.addEventListener('click', loadMore);
+
+function observeFunc(e) {
+    if (e[0].isIntersecting) {
+        loadMore();
+    }
+};
 
 function submitForm(e) {
     e.preventDefault();
@@ -36,32 +41,31 @@ function submitForm(e) {
     parameters.q = e.currentTarget.elements.searchQuery.value.trim();
     if (parameters.q === '') {
         Notify.warning('Type some text to find some pics');
-        loadMoreEl.classList.add('hidden');
         return;
     }
     const searchParameters = new URLSearchParams(parameters);
     fetchPhotos(`${URL}?${searchParameters}`)
         .then(noPhotos)
+        .then(()=>{observer.observe(richEndEl)})
         .then(drawPhotos)
         .catch(() => { })
 };
 
 function loadMore(e) {
-    loadMoreEl.classList.add('hidden');
     const searchParameters = new URLSearchParams(parameters);
     fetchPhotos(`${URL}?${searchParameters}`)
         .then(drawPhotos)
         .catch(() => { })
 }
 
-async function fetchPhotos(url) {
-    try {
-        const response = await axios.get(url);
-        return response.data;
-    } catch (error) {
-        Notify.failure('Sorry, some server error. Please try again.')
-    };
-};
+// async function fetchPhotos(url) {
+//     try {
+//         const response = await axios.get(url);
+//         return response.data;
+//     } catch (error) {
+//         Notify.failure('Sorry, some server error. Please try again.')
+//     };
+// };
 
 function noPhotos(response) {
     totalPics = response.totalHits;
@@ -101,12 +105,11 @@ function drawPhotos(list) {
     thisGallery.refresh();
     const richEnd = totalPics - parameters.page * parameters.per_page;
     if (richEnd < 0) {
-        loadMoreEl.classList.add('hidden');
         richEndEl.classList.remove('hidden');
+        observer.unobserve(richEndEl);
         return;
     }
     parameters.page += 1;
     richEndEl.classList.add('hidden');
-    loadMoreEl.classList.remove('hidden');
     throw new Error();
 };
